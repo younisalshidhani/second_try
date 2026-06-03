@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تقرير الزيارات</title>
+</head>
+<body>
+<h2>تسجيل زيارة</h2>
+<input id="school" placeholder="اسم المدرسة"><br><br>
+<button onclick="saveDraft()">💾 حفظ</button>
+<input type="hidden" id="__REQUESTDIGEST" value="">
+<script>
+function saveDraft() {
+    const school = document.getElementById("school").value;
+    localStorage.setItem("school", school);
+    alert("✅ تم الحفظ محليًا");
+    saveToSharePoint({
+        school: school,
+        date: new Date().toISOString(),
+        visited: true,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
+    });
+}
+const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
+const SP_LIST = "Visits";
+async function saveToSharePoint(data) {
+    const url = `${SP_SITE}/_api/web/lists/getbytitle('${SP_LIST}')/items`;
+    try {
+        const digest = document.getElementById("__REQUESTDIGEST")?.value;
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json;odata=nometadata",
+                "Content-Type": "application/json;odata=nometadata",
+                "X-RequestDigest": digest
+            },
+            body: JSON.stringify({
+                Title: data.school || "زيارة",
+                VisitDate: data.date,
+                School: data.school,
+                Visited: data.visited,
+                Month: data.month,
+                Year: data.year
+            })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        alert("✅ تم الحفظ في SharePoint");
+    } catch (err) {
+        console.error(err);
+        alert("❌ فشل الحفظ في SharePoint");
+    }
+}
+</script>
+</body>
+</html>
