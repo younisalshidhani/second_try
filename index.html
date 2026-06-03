@@ -9,7 +9,7 @@
 
 <h2>تقرير الزيارات من SharePoint</h2>
 
-<button onclick="loadData()">📥 تحميل البيانات</button>
+<button onclick="loadFromSharePoint()">📥 تحميل البيانات</button>
 
 <ul id="list"></ul>
 
@@ -18,8 +18,8 @@
 const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
 const SP_LIST = "Visits";
 
-// ===== جلب البيانات من SharePoint =====
-async function loadData() {
+// ✅ دالة واحدة فقط لجلب البيانات
+async function loadFromSharePoint() {
 
     const url = `${SP_SITE}/_api/web/lists/getbytitle('${SP_LIST}')/items`;
 
@@ -33,6 +33,7 @@ async function loadData() {
 
         const data = await res.json();
 
+        // عرض البيانات
         const list = document.getElementById("list");
         list.innerHTML = "";
 
@@ -42,6 +43,11 @@ async function loadData() {
                 item.ActualSchool + " - عدد الزيارات: " + item.class_visit_count;
             list.appendChild(li);
         });
+
+        // حفظها لاستخدام لاحق
+        window.spData = data.value;
+
+        console.log(data.value);
 
         alert("✅ تم تحميل البيانات");
 
