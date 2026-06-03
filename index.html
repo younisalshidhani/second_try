@@ -30,8 +30,15 @@ async function loadFromSharePoint() {
 
         items.forEach(item => {
             const li = document.createElement("li");
-            li.textContent =
-                item.ActualSchool + " - عدد الزيارات: " + item.class_visit_count;
+            const dateObj = new Date(item.date);
+const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
+
+li.textContent =
+    day + " - " +
+    item.ActualSchool +
+    " - عدد الزيارات: " +
+    item.class_visit_count;
+
             list.appendChild(li);
         });
 
