@@ -1,10 +1,13 @@
 [
   {
+    "date": "2026-06-01",
     "ActualSchool": "مدرسة الخوض",
     "class_visit_count": 2
   },
   {
+    "date": "2026-06-02",
     "ActualSchool": "مدرسة المعبيلة",
     "class_visit_count": 1
   }
 ]
+``
