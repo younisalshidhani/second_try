@@ -96,7 +96,39 @@ table.appendChild(totalRow);
 }
 function generateWord() {
 
-    const table = document.getElementById("table");
+    let rowsHTML = "";
+    let totalVisits = 0;
+    let workedDays = 0;
+
+    items.forEach(item => {
+
+        const dateObj = new Date(item.date);
+        const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
+        const date = dateObj.toLocaleDateString('ar');
+
+        const visits = item.class_visit_count || 0;
+        totalVisits += visits;
+
+        if (visits > 0) workedDays++;
+
+        rowsHTML += `
+        <tr>
+            <td>${date}</td>
+            <td>${day}</td>
+            <td>${item.planned || ""}</td>
+            <td>${item.actual || ""}</td>
+            <td>${item.visit_done ? "✔" : ""}</td>
+            <td>${visits}</td>
+            <td>${item.methods || ""}</td>
+            <td>${item.need_followup ? "✔" : ""}</td>
+            <td>${item.teacher_followup || ""}</td>
+        </tr>
+        `;
+    });
+
+    // ✅ حساب نسبة الإنجاز
+    const totalDays = 30;
+    const percent = Math.round((workedDays / totalDays) * 100);
 
     const html = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office'
@@ -105,9 +137,47 @@ function generateWord() {
     <meta charset="utf-8">
     <title>تقرير الزيارات</title>
     </head>
-    <body dir="rtl">
-    <h2>تقرير الزيارات الشهرية</h2>
-    ${table.outerHTML}
+
+    <body dir="rtl" style="font-family:Arial;">
+
+    <h2 style="text-align:center;">تقرير الزيارات الشهرية للمشرف التربوي</h2>
+
+    <p style="text-align:center;">
+    <b>الاسم:</b> يونس بن ناصر الشيذاني &nbsp;&nbsp;
+    <b>المادة:</b> فيزياء &nbsp;&nbsp;
+    <b>الشهر:</b> يونيو &nbsp;&nbsp;
+    <b>العام الدراسي:</b> 2025/2026
+    </p>
+
+    <table border="1" style="width:100%; text-align:center; border-collapse:collapse;">
+        <tr>
+            <th>التاريخ</th>
+            <th>اليوم</th>
+            <th>الخطة الشهرية</th>
+            <th>الخطة المنفذة</th>
+            <th>زيارة مدرسية</th>
+            <th>عدد الزيارات</th>
+            <th>الأساليب الإشرافية</th>
+            <th>متابعة إلكترونية</th>
+            <th>معلم يحتاج متابعة</th>
+        </tr>
+
+        ${rowsHTML}
+
+        <tr>
+            <td colspan="5"><b>المجموع</b></td>
+            <td><b>${totalVisits}</b></td>
+            <td colspan="3"></td>
+        </tr>
+
+    </table>
+
+    <br><br>
+
+    <p>
+    نسبة الإنجاز = (${workedDays} / ${totalDays}) × 100 = <b>${percent}%</b>
+    </p>
+
     </body>
     </html>
     `;
@@ -123,6 +193,7 @@ function generateWord() {
     a.download = "تقرير_الزيارات.doc";
     a.click();
 }
+
 </script>
 
 </body>
