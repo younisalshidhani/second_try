@@ -11,8 +11,23 @@
 
 <button onclick="loadFromSharePoint()">📥 تحميل البيانات</button>
 
-<ul id="list"></ul>
-
+<table border="1" style="width:100%; text-align:center" id="table">
+  <thead>
+    <tr>
+      <th>التاريخ</th>
+      <th>اليوم</th>
+      <th>الخطة الشهرية</th>
+      <th>الخطة المنفذة</th>
+      <th>زيارة مدرسية</th>
+      <th>عدد الزيارات</th>
+      <th>الأساليب الإشرافية</th>
+      <th>متابعة إلكترونية</th>
+      <th>معلم يحتاج متابعة</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+``
 <script>
 
 const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
@@ -25,22 +40,48 @@ async function loadFromSharePoint() {
         const res = await fetch("data.json");
         const items = await res.json();
 
-        const list = document.getElementById("list");
-        list.innerHTML = "";
+const table = document.querySelector("#table tbody");
+table.innerHTML = "";
 
-        items.forEach(item => {
-            const li = document.createElement("li");
-            const dateObj = new Date(item.date);
-const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
+let totalVisits = 0;
 
-li.textContent =
-    day + " - " +
-    item.ActualSchool +
-    " - عدد الزيارات: " +
-    item.class_visit_count;
+items.forEach(item => {
 
-            list.appendChild(li);
-        });
+    const dateObj = new Date(item.date);
+    const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
+    const date = dateObj.toLocaleDateString('ar');
+
+    totalVisits += item.class_visit_count;
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${date}</td>
+        <td>${day}</td>
+        <td>${item.planned || ""}</td>
+        <td>${item.actual || ""}</td>
+        <td>${item.visit_done ? "✓" : ""}</td>
+        <td>${item.class_visit_count || 0}</td>
+        <td>${item.methods || ""}</td>
+        <td>${item.need_followup ? "✓" : ""}</td>
+        <td>${item.teacher_followup || ""}</td>
+    `;
+
+    table.appendChild(row);
+});
+
+// ✅ صف المجموع
+const totalRow = document.createElement("tr");
+
+totalRow.innerHTML = `
+    <td colspan="5"><b>المجموع</b></td>
+    <td><b>${totalVisits}</b></td>
+    <td colspan="3"></td>
+`;
+
+table.appendChild(totalRow);
+        
+
 
         window.spData = items;
 
