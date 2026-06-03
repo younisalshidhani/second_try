@@ -37,7 +37,9 @@ async function loadFromSharePoint() {
         const list = document.getElementById("list");
         list.innerHTML = "";
 
-        data.value.forEach(item => {
+        const items = data.value || data;
+
+items.forEach(item => {
             const li = document.createElement("li");
             li.textContent =
                 item.ActualSchool + " - عدد الزيارات: " + item.class_visit_count;
