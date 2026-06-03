@@ -27,6 +27,8 @@
   </thead>
   <tbody></tbody>
 </table>
+<br><br>
+<button onclick="generateWord()">📄 توليد Word</button>
 ``
 <script>
 
@@ -92,7 +94,35 @@ table.appendChild(totalRow);
         alert("❌ فشل تحميل البيانات");
     }
 }
+function generateWord() {
 
+    const table = document.getElementById("table");
+
+    const html = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office'
+    xmlns:w='urn:schemas-microsoft-com:office:word'>
+    <head>
+    <meta charset="utf-8">
+    <title>تقرير الزيارات</title>
+    </head>
+    <body dir="rtl">
+    <h2>تقرير الزيارات الشهرية</h2>
+    ${table.outerHTML}
+    </body>
+    </html>
+    `;
+
+    const blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "تقرير_الزيارات.doc";
+    a.click();
+}
 </script>
 
 </body>
