@@ -18,7 +18,7 @@
 const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
 const SP_LIST = "Visits";
 
-// ✅ دالة واحدة فقط لجلب البيانات
+// ✅ دالة جلب البيانات من Power Automate
 async function loadFromSharePoint() {
 
     const url = "https://default04b4cb5dcc41401fbd9d4ca8a31a5c.2f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b9e5c971260c4eeabd2b17fec80fb0f9/triggers/manual/paths/invoke?api-version=1";
@@ -27,39 +27,44 @@ async function loadFromSharePoint() {
         const res = await fetch(url, {
             method: "GET",
             headers: {
-                "Accept": "application/json;odata=nometadata"
+                "Accept": "application/json"
             }
         });
 
         const data = await res.json();
 
-        // عرض البيانات
-        const list = document.getElementById("list");
-        list.innerHTML = "";
-
+        // ✅ دعم الحالتين (Flow أو SharePoint)
         const items = data.value || data;
 
-items.forEach(item => {
-            const li = document.createElement("li");
-            li.textContent =
-                item.ActualSchool + " - عدد الزيارات: " + item.class_visit_count;
-            list.appendChild(li);
-        });
+        // ✅ عرض البيانات
+        const list = document.getElementById("list");
+        if (list) {
+            list.innerHTML = "";
 
-        // حفظها لاستخدام لاحق
-        window.spData = data.value;
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent =
+                    (item.ActualSchool || "غير محدد") +
+                    " - عدد الزيارات: " +
+                    (item.class_visit_count || 0);
+                list.appendChild(li);
+            });
+        }
 
-        console.log(data.value);
+        // ✅ حفظ البيانات للاستخدام لاحقًا
+        window.spData = items;
+
+        console.log("✅ البيانات:", items);
 
         alert("✅ تم تحميل البيانات");
 
     } catch (err) {
-        console.error(err);
+        console.error("❌ خطأ:", err);
         alert("❌ فشل تحميل البيانات");
     }
 }
 
 </script>
-
+``
 </body>
 </html>
