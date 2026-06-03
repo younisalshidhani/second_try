@@ -1,12 +1,22 @@
 [
   {
     "date": "2026-06-01",
-    "ActualSchool": "مدرسة الخوض",
-    "class_visit_count": 2
+    "planned": "مدرسة الخوض",
+    "actual": "مدرسة الخوض",
+    "visit_done": true,
+    "class_visit_count": 2,
+    "methods": "زيارة صفية",
+    "need_followup": false,
+    "teacher_followup": ""
   },
   {
     "date": "2026-06-02",
-    "ActualSchool": "مدرسة المعبيلة",
-    "class_visit_count": 1
+    "planned": "مدرسة المعبيلة",
+    "actual": "مدرسة المعبيلة",
+    "visit_done": true,
+    "class_visit_count": 1,
+    "methods": "ملاحظة صفية",
+    "need_followup": true,
+    "teacher_followup": "أحمد"
   }
 ]
