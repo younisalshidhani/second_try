@@ -4,53 +4,54 @@
 <meta charset="UTF-8">
 <title>تقرير الزيارات</title>
 </head>
+
 <body>
-<h2>تسجيل زيارة</h2>
-<input id="school" placeholder="اسم المدرسة"><br><br>
-<button onclick="saveDraft()">💾 حفظ</button>
-<input type="hidden" id="__REQUESTDIGEST" value="">
+
+<h2>تقرير الزيارات من SharePoint</h2>
+
+<button onclick="loadData()">📥 تحميل البيانات</button>
+
+<ul id="list"></ul>
+
 <script>
-function saveDraft() {
-    const school = document.getElementById("school").value;
-    localStorage.setItem("school", school);
-    alert("✅ تم الحفظ محليًا");
-    saveToSharePoint({
-        school: school,
-        date: new Date().toISOString(),
-        visited: true,
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear()
-    });
-}
+
 const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
 const SP_LIST = "Visits";
-async function saveToSharePoint(data) {
+
+// ===== جلب البيانات من SharePoint =====
+async function loadData() {
+
     const url = `${SP_SITE}/_api/web/lists/getbytitle('${SP_LIST}')/items`;
+
     try {
-        const digest = document.getElementById("__REQUESTDIGEST")?.value;
         const res = await fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: {
-                "Accept": "application/json;odata=nometadata",
-                "Content-Type": "application/json;odata=nometadata",
-                "X-RequestDigest": digest
-            },
-            body: JSON.stringify({
-                Title: data.school || "زيارة",
-                VisitDate: data.date,
-                School: data.school,
-                Visited: data.visited,
-                Month: data.month,
-                Year: data.year
-            })
+                "Accept": "application/json;odata=nometadata"
+            }
         });
-        if (!res.ok) throw new Error(await res.text());
-        alert("✅ تم الحفظ في SharePoint");
+
+        const data = await res.json();
+
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.value.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent =
+                item.ActualSchool + " - عدد الزيارات: " + item.class_visit_count;
+            list.appendChild(li);
+        });
+
+        alert("✅ تم تحميل البيانات");
+
     } catch (err) {
         console.error(err);
-        alert("❌ فشل الحفظ في SharePoint");
+        alert("❌ فشل تحميل البيانات");
     }
 }
+
 </script>
+
 </body>
 </html>
