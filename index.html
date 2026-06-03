@@ -21,7 +21,7 @@ const SP_LIST = "Visits";
 // ✅ دالة واحدة فقط لجلب البيانات
 async function loadFromSharePoint() {
 
-    const url = `${SP_SITE}/_api/web/lists/getbytitle('${SP_LIST}')/items`;
+    const url = "https://default04b4cb5dcc41401fbd9d4ca8a31a5c.2f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b9e5c971260c4eeabd2b17fec80fb0f9/triggers/manual/paths/invoke?api-version=1";
 
     try {
         const res = await fetch(url, {
