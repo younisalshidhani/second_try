@@ -27,65 +27,60 @@
   </thead>
   <tbody></tbody>
 </table>
+
 <br><br>
 <button onclick="generateWord()">📄 توليد Word</button>
-``
+
 <script>
 
-const SP_SITE = "https://moeom.sharepoint.com/sites/younis";
-const SP_LIST = "Visits";
+// ✅ تخزين البيانات بشكل عام
+let items = [];
 
-// ✅ دالة جلب البيانات من Power Automate
 async function loadFromSharePoint() {
 
     try {
         const res = await fetch("data.json");
-        const items = await res.json();
+        items = await res.json(); // ✅ تخزينها عالمياً
 
-const table = document.querySelector("#table tbody");
-table.innerHTML = "";
+        const table = document.querySelector("#table tbody");
+        table.innerHTML = "";
 
-let totalVisits = 0;
+        let totalVisits = 0;
 
-items.forEach(item => {
+        items.forEach(item => {
 
-    const dateObj = new Date(item.date);
-    const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
-    const date = dateObj.toLocaleDateString('ar');
+            const dateObj = new Date(item.date);
+            const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
+            const date = dateObj.toLocaleDateString('ar');
 
-    totalVisits += item.class_visit_count;
+            totalVisits += item.class_visit_count;
 
-    const row = document.createElement("tr");
+            const row = document.createElement("tr");
 
-    row.innerHTML = `
-        <td>${date}</td>
-        <td>${day}</td>
-        <td>${item.planned || ""}</td>
-        <td>${item.actual || ""}</td>
-        <td>${item.visit_done ? "✓" : ""}</td>
-        <td>${item.class_visit_count || 0}</td>
-        <td>${item.methods || ""}</td>
-        <td>${item.need_followup ? "✓" : ""}</td>
-        <td>${item.teacher_followup || ""}</td>
-    `;
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${day}</td>
+                <td>${item.planned || ""}</td>
+                <td>${item.actual || ""}</td>
+                <td>${item.visit_done ? "✓" : ""}</td>
+                <td>${item.class_visit_count || 0}</td>
+                <td>${item.methods || ""}</td>
+                <td>${item.need_followup ? "✓" : ""}</td>
+                <td>${item.teacher_followup || ""}</td>
+            `;
 
-    table.appendChild(row);
-});
+            table.appendChild(row);
+        });
 
-// ✅ صف المجموع
-const totalRow = document.createElement("tr");
+        const totalRow = document.createElement("tr");
 
-totalRow.innerHTML = `
-    <td colspan="5"><b>المجموع</b></td>
-    <td><b>${totalVisits}</b></td>
-    <td colspan="3"></td>
-`;
+        totalRow.innerHTML = `
+            <td colspan="5"><b>المجموع</b></td>
+            <td><b>${totalVisits}</b></td>
+            <td colspan="3"></td>
+        `;
 
-table.appendChild(totalRow);
-        
-
-
-        window.spData = items;
+        table.appendChild(totalRow);
 
         alert("✅ تم تحميل البيانات");
 
@@ -94,7 +89,13 @@ table.appendChild(totalRow);
         alert("❌ فشل تحميل البيانات");
     }
 }
+
 function generateWord() {
+
+    if (items.length === 0) {
+        alert("❗ اضغط تحميل البيانات أولاً");
+        return;
+    }
 
     let rowsHTML = "";
     let totalVisits = 0;
@@ -126,7 +127,6 @@ function generateWord() {
         `;
     });
 
-    // ✅ حساب نسبة الإنجاز
     const totalDays = 30;
     const percent = Math.round((workedDays / totalDays) * 100);
 
@@ -135,21 +135,13 @@ function generateWord() {
     xmlns:w='urn:schemas-microsoft-com:office:word'>
     <head>
     <meta charset="utf-8">
-    <title>تقرير الزيارات</title>
     </head>
 
-    <body dir="rtl" style="font-family:Arial;">
+    <body dir="rtl">
 
-    <h2 style="text-align:center;">تقرير الزيارات الشهرية للمشرف التربوي</h2>
+    <h2 style="text-align:center;">تقرير الزيارات الشهرية</h2>
 
-    <p style="text-align:center;">
-    <b>الاسم:</b> يونس بن ناصر الشيذاني &nbsp;&nbsp;
-    <b>المادة:</b> فيزياء &nbsp;&nbsp;
-    <b>الشهر:</b> يونيو &nbsp;&nbsp;
-    <b>العام الدراسي:</b> 2025/2026
-    </p>
-
-    <table border="1" style="width:100%; text-align:center; border-collapse:collapse;">
+    <table border="1" style="width:100%; text-align:center;">
         <tr>
             <th>التاريخ</th>
             <th>اليوم</th>
@@ -164,28 +156,19 @@ function generateWord() {
 
         ${rowsHTML}
 
-        <tr>
-            <td colspan="5"><b>المجموع</b></td>
-            <td><b>${totalVisits}</b></td>
-            <td colspan="3"></td>
-        </tr>
-
     </table>
 
     <br><br>
 
     <p>
-    نسبة الإنجاز = (${workedDays} / ${totalDays}) × 100 = <b>${percent}%</b>
+    نسبة الإنجاز = ${percent}%
     </p>
 
     </body>
     </html>
     `;
 
-    const blob = new Blob(['\ufeff', html], {
-        type: 'application/msword'
-    });
-
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
