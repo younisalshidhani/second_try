@@ -25,11 +25,13 @@ async function loadFromSharePoint() {
 
     try {
         const res = await fetch(url, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: "{}"
+});
+
 
         const data = await res.json();
 
