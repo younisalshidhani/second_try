@@ -14,15 +14,18 @@
 <table border="1" style="width:100%; text-align:center" id="table">
   <thead>
     <tr>
-      <th>التاريخ</th>
-      <th>اليوم</th>
-      <th>الخطة الشهرية</th>
-      <th>الخطة المنفذة</th>
+      <th rowspan="2">التاريخ</th>
+      <th rowspan="2">اليوم</th>
+      <th rowspan="2">الخطة الشهرية</th>
+      <th rowspan="2">الخطة المنفذة</th>
+      <th colspan="2">توثيق الزيارات</th>
+      <th rowspan="2">الأساليب الإشرافية</th>
+      <th rowspan="2">متابعة إلكترونية</th>
+      <th rowspan="2">معلم يحتاج متابعة</th>
+    </tr>
+    <tr>
       <th>زيارة مدرسية</th>
       <th>عدد الزيارات</th>
-      <th>الأساليب الإشرافية</th>
-      <th>متابعة إلكترونية</th>
-      <th>معلم يحتاج متابعة</th>
     </tr>
   </thead>
   <tbody></tbody>
@@ -38,56 +41,44 @@ let items = [];
 
 async function loadFromSharePoint() {
 
-    try {
-        const res = await fetch("data.json");
-        items = await res.json();
+    const res = await fetch("data.json");
+    items = await res.json();
 
-        const table = document.querySelector("#table tbody");
-        table.innerHTML = "";
+    const table = document.querySelector("#table tbody");
+    table.innerHTML = "";
 
-        let totalVisits = 0;
+    let totalVisits = 0;
 
-        items.forEach(item => {
+    items.forEach(item => {
 
-            const d = new Date(item.date);
-            const day = d.toLocaleDateString('ar', { weekday: 'long' });
-            const date = d.toLocaleDateString('ar');
+        const d = new Date(item.date);
+        const day = d.toLocaleDateString('ar', { weekday: 'long' });
+        const date = d.toLocaleDateString('ar');
 
-            totalVisits += item.class_visit_count;
+        totalVisits += item.class_visit_count;
 
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${date}</td>
-                <td>${day}</td>
-                <td>${item.planned || ""}</td>
-                <td>${item.actual || ""}</td>
-                <td>${item.visit_done ? "✓" : ""}</td>
-                <td>${item.class_visit_count || 0}</td>
-                <td>${item.methods || ""}</td>
-                <td>${item.need_followup ? "✓" : ""}</td>
-                <td>${item.teacher_followup || ""}</td>
-            `;
-
-            table.appendChild(row);
-        });
-
-        const totalRow = document.createElement("tr");
-
-        totalRow.innerHTML = `
-            <td colspan="5"><b>المجموع</b></td>
-            <td><b>${totalVisits}</b></td>
-            <td colspan="3"></td>
+        table.innerHTML += `
+        <tr>
+            <td>${date}</td>
+            <td>${day}</td>
+            <td>${item.planned || ""}</td>
+            <td>${item.actual || ""}</td>
+            <td>${item.visit_done ? "✓" : ""}</td>
+            <td>${item.class_visit_count || 0}</td>
+            <td>${item.methods || ""}</td>
+            <td>${item.need_followup ? "✓" : ""}</td>
+            <td>${item.teacher_followup || ""}</td>
+        </tr>
         `;
+    });
 
-        table.appendChild(totalRow);
-
-        alert("✅ تم تحميل البيانات");
-
-    } catch (err) {
-        console.error(err);
-        alert("❌ فشل تحميل البيانات");
-    }
+    table.innerHTML += `
+    <tr>
+        <td colspan="5"><b>المجموع</b></td>
+        <td><b>${totalVisits}</b></td>
+        <td colspan="3"></td>
+    </tr>
+    `;
 }
 
 function generateWord() {
@@ -127,8 +118,7 @@ function generateWord() {
         `;
     });
 
-    const totalDays = 30;
-    const percent = Math.round((workedDays / totalDays) * 100);
+    const percent = Math.round((workedDays / 30) * 100);
 
     const html = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office'
@@ -136,10 +126,7 @@ function generateWord() {
     <head>
     <meta charset="UTF-8">
     <style>
-        body {
-            font-family: Arial;
-            direction: rtl;
-        }
+        body { font-family: Arial; direction: rtl; }
 
         table {
             width: 100%;
@@ -153,9 +140,7 @@ function generateWord() {
             font-size: 14px;
         }
 
-        h2 {
-            text-align: center;
-        }
+        h2 { text-align: center; }
 
         .header {
             text-align: center;
@@ -180,39 +165,42 @@ function generateWord() {
 
     <table>
 
-        <tr>
-            <th>التاريخ</th>
-            <th>اليوم</th>
-            <th>الخطة الشهرية</th>
-            <th>الخطة المنفذة</th>
-            <th>زيارة مدرسية</th>
-            <th>عدد الزيارات</th>
-            <th>الأساليب الإشرافية</th>
-            <th>متابعة إلكترونية</th>
-            <th>معلم يحتاج متابعة</th>
-        </tr>
+    <tr>
+        <th rowspan="2">التاريخ</th>
+        <th rowspan="2">اليوم</th>
+        <th rowspan="2">الخطة الشهرية</th>
+        <th rowspan="2">الخطة المنفذة</th>
+        <th colspan="2">توثيق الزيارات</th>
+        <th rowspan="2">الأساليب الإشرافية</th>
+        <th rowspan="2">متابعة إلكترونية</th>
+        <th rowspan="2">معلم يحتاج متابعة</th>
+    </tr>
+    <tr>
+        <th>زيارة مدرسية</th>
+        <th>عدد الزيارات</th>
+    </tr>
 
-        ${rowsHTML}
+    ${rowsHTML}
 
-        <tr>
-            <td colspan="5"><b>المجموع</b></td>
-            <td><b>${totalVisits}</b></td>
-            <td colspan="3"></td>
-        </tr>
+    <tr>
+        <td colspan="5"><b>المجموع</b></td>
+        <td><b>${totalVisits}</b></td>
+        <td colspan="3"></td>
+    </tr>
 
     </table>
 
     <br><br>
 
     <p>
-    نسبة الإنجاز = (${workedDays} / ${totalDays}) × 100 = <b>${percent}%</b>
+    نسبة الإنجاز = (${workedDays} / 30) × 100 = <b>${percent}%</b>
     </p>
 
     <br><br>
 
     <p style="text-align:center;">
-        يعتمد،<br><br>
-        المشرف | المشرف الأول | رئيس القسم
+    يعتمد<br><br>
+    المشرف | المشرف الأول | رئيس القسم
     </p>
 
     </body>
@@ -227,10 +215,9 @@ function generateWord() {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "تقرير_الزيارات_الرسمي.doc";
+    a.download = "تقرير_رسمي.doc";
     a.click();
 }
-
 </script>
 
 </body>
