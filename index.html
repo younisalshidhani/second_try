@@ -33,14 +33,14 @@
 
 <script>
 
-// ✅ تخزين البيانات بشكل عام
+// ✅ متغير عام
 let items = [];
 
 async function loadFromSharePoint() {
 
     try {
         const res = await fetch("data.json");
-        items = await res.json(); // ✅ تخزينها عالمياً
+        items = await res.json();
 
         const table = document.querySelector("#table tbody");
         table.innerHTML = "";
@@ -49,9 +49,9 @@ async function loadFromSharePoint() {
 
         items.forEach(item => {
 
-            const dateObj = new Date(item.date);
-            const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
-            const date = dateObj.toLocaleDateString('ar');
+            const d = new Date(item.date);
+            const day = d.toLocaleDateString('ar', { weekday: 'long' });
+            const date = d.toLocaleDateString('ar');
 
             totalVisits += item.class_visit_count;
 
@@ -103,9 +103,9 @@ function generateWord() {
 
     items.forEach(item => {
 
-        const dateObj = new Date(item.date);
-        const day = dateObj.toLocaleDateString('ar', { weekday: 'long' });
-        const date = dateObj.toLocaleDateString('ar');
+        const d = new Date(item.date);
+        const day = d.toLocaleDateString('ar', { weekday: 'long' });
+        const date = d.toLocaleDateString('ar');
 
         const visits = item.class_visit_count || 0;
         totalVisits += visits;
@@ -134,14 +134,52 @@ function generateWord() {
     <html xmlns:o='urn:schemas-microsoft-com:office:office'
     xmlns:w='urn:schemas-microsoft-com:office:word'>
     <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial;
+            direction: rtl;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
     </head>
 
-    <body dir="rtl">
+    <body>
 
-    <h2 style="text-align:center;">تقرير الزيارات الشهرية</h2>
+    <h2>تقرير الزيارات الشهرية للمشرف التربوي</h2>
 
-    <table border="1" style="width:100%; text-align:center;">
+    <div class="header">
+        <b>الاسم:</b> يونس بن ناصر الشيذاني
+        &nbsp;&nbsp;
+        <b>المادة:</b> فيزياء
+        &nbsp;&nbsp;
+        <b>الشهر:</b> يونيو
+        &nbsp;&nbsp;
+        <b>العام الدراسي:</b> 2025/2026
+    </div>
+
+    <table>
+
         <tr>
             <th>التاريخ</th>
             <th>اليوم</th>
@@ -156,24 +194,40 @@ function generateWord() {
 
         ${rowsHTML}
 
+        <tr>
+            <td colspan="5"><b>المجموع</b></td>
+            <td><b>${totalVisits}</b></td>
+            <td colspan="3"></td>
+        </tr>
+
     </table>
 
     <br><br>
 
     <p>
-    نسبة الإنجاز = ${percent}%
+    نسبة الإنجاز = (${workedDays} / ${totalDays}) × 100 = <b>${percent}%</b>
+    </p>
+
+    <br><br>
+
+    <p style="text-align:center;">
+        يعتمد،<br><br>
+        المشرف | المشرف الأول | رئيس القسم
     </p>
 
     </body>
     </html>
     `;
 
-    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+    });
+
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "تقرير_الزيارات.doc";
+    a.download = "تقرير_الزيارات_الرسمي.doc";
     a.click();
 }
 
