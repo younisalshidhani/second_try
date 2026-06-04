@@ -1,22 +1,22 @@
 [
   {
-    "date": "2026-06-01",
-    "planned": "مدرسة الخوض",
-    "actual": "مدرسة الخوض",
+    "date": "2026-06-03",
+    "planned": "أحمد بن سعيد",
+    "actual": "أحمد بن سعيد",
     "visit_done": true,
-    "class_visit_count": 2,
-    "methods": "زيارة صفية",
-    "need_followup": false,
+    "class_visit_count": 3,
+    "methods": "",
+    "need_followup": true,
     "teacher_followup": ""
   },
   {
-    "date": "2026-06-02",
-    "planned": "مدرسة المعبيلة",
-    "actual": "مدرسة المعبيلة",
+    "date": "2026-06-05",
+    "planned": "عبدالله بن سالم",
+    "actual": "عبدالله بن سالم",
     "visit_done": true,
-    "class_visit_count": 1,
-    "methods": "ملاحظة صفية",
+    "class_visit_count": 2,
+    "methods": "",
     "need_followup": true,
-    "teacher_followup": "أحمد"
+    "teacher_followup": ""
   }
 ]
